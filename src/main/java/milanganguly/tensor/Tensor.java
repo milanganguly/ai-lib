@@ -2,12 +2,14 @@ package milanganguly.tensor;
 
 import milanganguly.autograd.Operation;
 
+import java.util.Arrays;
+
 public class Tensor {
     public float[] data;
     public float[] grad;
     public int[] shape;
 
-    public boolean requiresGrad = false;
+    public boolean requiresGrad;
 
     public Tensor[] parents;
     public Operation backwardsOp = null;
@@ -27,9 +29,6 @@ public class Tensor {
         return n;
     }
     public void zeroGrad() {
-        for (int i = 0; i<this.grad.length; i++) {
-            this.grad[i] = 0;
-        }
+        Arrays.fill(this.grad, 0);
     }
-
 }

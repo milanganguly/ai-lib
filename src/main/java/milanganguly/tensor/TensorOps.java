@@ -1,11 +1,8 @@
 package milanganguly.tensor;
 
 import milanganguly.autograd.Autograd;
-import milanganguly.autograd.Operation;
 
 import java.util.Arrays;
-
-import static milanganguly.autograd.Autograd.addBackward;
 
 public class TensorOps {
     public static Tensor add(Tensor a, Tensor b) {
@@ -152,8 +149,8 @@ public class TensorOps {
     }
     public static Tensor reshape(Tensor a, int[] newShape) {
         int elts = 1;
-        for (int i = 0; i < newShape.length; i++) {
-            elts *=  newShape[i];
+        for (int j : newShape) {
+            elts *= j;
         }
         if (elts != a.numel()) {
             throw new IllegalArgumentException("Tensor shapes do not match for reshape.");
