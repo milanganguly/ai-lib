@@ -1,12 +1,13 @@
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class MNISTLoader {
 
     public static class MNISTData {
-        public float[][] images;
-        public int[] labels;
+        public final float[][] images;
+        public final int[] labels;
 
         public MNISTData(float[][] images, int[] labels) {
             this.images = images;
@@ -15,54 +16,62 @@ public class MNISTLoader {
     }
 
     public static MNISTData loadTrain() throws IOException {
-        return load(
-                "/mnist/train-images-idx3-ubyte",
-                "/mnist/train-labels-idx1-ubyte"
-        );
+        return load("train-images-idx3-ubyte",
+                "train-labels-idx1-ubyte");
     }
 
     public static MNISTData loadTest() throws IOException {
-        return load(
-                "/mnist/t10k-images-idx3-ubyte",
-                "/mnist/t10k-labels-idx1-ubyte"
-        );
+        return load("t10k-images-idx3-ubyte",
+                "t10k-labels-idx1-ubyte");
     }
 
-    private static MNISTData load(String imagePath, String labelPath) throws IOException {
 
-        InputStream imageStream = MNISTLoader.class.getResourceAsStream(imagePath);
-        InputStream labelStream = MNISTLoader.class.getResourceAsStream(labelPath);
+    private static MNISTData load(String imageFile, String labelFile) throws IOException {
 
-        DataInputStream images = new DataInputStream(new BufferedInputStream(imageStream));
-        DataInputStream labels = new DataInputStream(new BufferedInputStream(labelStream));
+        try (DataInputStream images = open(imageFile);
+             DataInputStream labels = open(labelFile)) {
 
-        // ---- Read image header ----
-        images.readInt(); // magic number
-        int numImages = images.readInt();
-        int rows = images.readInt();
-        int cols = images.readInt();
+            // ----- Images header -----
+            int imageMagic = images.readInt();
+            int numImages  = images.readInt();
+            int rows       = images.readInt();
+            int cols       = images.readInt();
 
-        // ---- Read label header ----
-        labels.readInt(); // magic number
-        int numLabels = labels.readInt();
+            // ----- Labels header -----
+            int labelMagic = labels.readInt();
+            int numLabels  = labels.readInt();
 
-        if (numImages != numLabels)
-            throw new IllegalStateException("Mismatch between images and labels");
-
-        float[][] imageData = new float[numImages][rows * cols];
-        int[] labelData = new int[numLabels];
-
-        for (int i = 0; i < numImages; i++) {
-            for (int j = 0; j < rows * cols; j++) {
-                int pixel = images.readUnsignedByte();
-                imageData[i][j] = pixel / 255.0f; // normalize
+            if (numImages != numLabels) {
+                throw new RuntimeException("Image count does not match label count.");
             }
-            labelData[i] = labels.readUnsignedByte();
+
+            float[][] imageData = new float[numImages][rows * cols];
+            int[] labelData = new int[numImages];
+
+            for (int i = 0; i < numImages; i++) {
+
+                for (int j = 0; j < rows * cols; j++) {
+                    int pixel = images.readUnsignedByte();
+                    imageData[i][j] = pixel / 255.0f;
+                }
+
+                labelData[i] = labels.readUnsignedByte();
+            }
+
+            return new MNISTData(imageData, labelData);
+        }
+    }
+
+    private static DataInputStream open(String name) {
+
+        InputStream is = MNISTLoader.class
+                .getClassLoader()
+                .getResourceAsStream("mnist/" + name);
+
+        if (is == null) {
+            throw new RuntimeException("Could not find MNIST file: " + name);
         }
 
-        images.close();
-        labels.close();
-
-        return new MNISTData(imageData, labelData);
+        return new DataInputStream(new BufferedInputStream(is));
     }
 }

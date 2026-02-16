@@ -147,7 +147,8 @@ public class TensorOps {
     }
     public static Tensor mae(Tensor pred, Tensor target) {
         Tensor diff = add(target, neg(pred));
-        return mean(diff);
+        Tensor abs = abs(diff);
+        return mean(abs);
     }
     public static Tensor exp(Tensor a) {
         float[] aData = a.getData();

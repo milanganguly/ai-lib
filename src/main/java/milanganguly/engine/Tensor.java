@@ -74,4 +74,11 @@ public class Tensor {
     float[] dataRef() {
         return data;
     }
+    public void copyFrom(float[] src) {
+        if (src.length != this.data.length) {
+            throw new IllegalArgumentException("Size mismatch in copyFrom");
+        }
+        System.arraycopy(src, 0, this.data, 0, src.length);
+    }
+
 }
