@@ -126,6 +126,26 @@ Current limitations include:
 
 The focus of this project is clarity and understanding rather than raw performance.
 
+---
+
+## Future Improvements
+
+Potential areas for future development:
+
+- GPU acceleration support (e.g., JNI bindings or CUDA backend)
+- Multi-threaded CPU execution
+- Additional layers (BatchNorm, Dropout, Residual blocks)
+- More activation functions (LeakyReLU, GELU, Tanh)
+- Expanded optimizer support (SGD with momentum, RMSProp)
+- Automatic batching utilities
+- Gradient checking utilities for debugging
+- Performance benchmarking suite
+- Dataset abstraction layer beyond MNIST
+- Improved model serialization format
+
+These improvements would extend the framework while preserving its educational focus.
+
+---
 
 ## Example Usage
 
@@ -223,13 +243,6 @@ model.load("model.bin");
 ```
 
 The loader verifies parameter counts and tensor shapes to ensure integrity.
-
----
-
-## Performance Note
-
-This library prioritizes clarity and educational value over production performance.  
-It is not optimized for GPU acceleration.
 
 ---
 
