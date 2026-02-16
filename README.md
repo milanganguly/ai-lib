@@ -8,7 +8,7 @@ A lightweight neural network and automatic differentiation engine written entire
 
 This project implements tensors, reverse-mode autodifferentiation, convolutional neural networks, optimizers, and training pipelines without relying on external deep learning frameworks such as PyTorch or TensorFlow.
 
-The goal is to understand deep learning systems from first principles.
+The goal was to increase understanding of deep learning systems.
 
 ---
 
