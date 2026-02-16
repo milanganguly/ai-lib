@@ -4,32 +4,17 @@
 
 # ai-lib
 
-A lightweight neural network and automatic differentiation engine written entirely from scratch in Java.
+ai-lib is a deep learning framework built entirely from first principles in pure Java.
 
-This project implements tensors, reverse-mode autodifferentiation, convolutional neural networks, optimizers, and training pipelines without relying on external deep learning frameworks such as PyTorch or TensorFlow.
+It implements tensors, reverse-mode automatic differentiation, convolutional neural networks, optimizers, and training pipelines without relying on external ML frameworks such as PyTorch or TensorFlow.
 
-The goal was to increase understanding of deep learning systems.
-
----
-
-## Features
-
-- Custom Tensor implementation
-- Reverse-mode automatic differentiation (backpropagation)
-- Linear layers
-- 2D Convolution
-- Max Pooling
-- ReLU activation
-- Cross-Entropy loss
-- Adam optimizer (bias-corrected)
-- Model save / load functionality
-- End-to-end MNIST training demo
+The purpose of this project is to deeply understand how modern neural networks work internally — from tensor operations to gradient propagation and parameter updates.
 
 ---
 
 ## Example Result
 
-Training a small CNN on full MNIST (60,000 training / 10,000 test samples):
+Training a small CNN on full MNIST (60,000 training / 10,000 test samples) achieved ~97.3% test accuracy after 1 epoch.
 
 Architecture:
 
@@ -49,6 +34,124 @@ Linear(32 → 10)
 After 1 epoch:
 
 - Test accuracy: ~97.3%
+
+---
+
+## Features
+
+- Custom Tensor implementation  
+- Reverse-mode automatic differentiation (backpropagation)  
+- Linear layers  
+- 2D Convolution  
+- Max Pooling  
+- ReLU activation  
+- Cross-Entropy and MSE loss  
+- Adam optimizer (bias-corrected implementation)  
+- Model save / load functionality  
+- End-to-end MNIST training demo  
+
+---
+
+## Why Java?
+
+- Demonstrate low-level understanding without high-level ML frameworks  
+- Explore performance trade-offs in a managed runtime  
+- Show that neural networks are not framework-dependent  
+- Build strong fundamentals in autodifferentiation and tensor math  
+
+---
+
+## Engine Design
+
+ai-lib is structured into modular components that mirror the core building blocks of modern deep learning frameworks.
+
+### Core Components
+
+**Tensor**
+- Multidimensional array implementation
+- Optional gradient tracking (`requiresGrad`)
+- Stores data and accumulated gradients
+- Supports basic tensor operations used in forward computation
+
+**Autograd Engine**
+- Reverse-mode automatic differentiation
+- Builds a dynamic computation graph during forward pass
+- Propagates gradients in reverse topological order during backward pass
+- Enables gradient accumulation for parameter updates
+
+**Neural Network Modules**
+- Linear
+- Conv2D
+- MaxPool
+- ReLU
+- Sigmoid
+- Flatten
+
+Modules expose:
+- `forward(Tensor input)`
+- Parameter access for optimizers
+
+**Loss Functions**
+- Cross-Entropy
+- Mean Squared Error (MSE)
+
+**Optimizers**
+- Adam (bias-corrected implementation)
+- Parameter update based on accumulated gradients
+
+### Training Flow
+
+1. Forward pass builds computation graph  
+2. Loss is computed  
+3. `Autograd.backward(loss)` performs reverse-mode differentiation  
+4. Optimizer updates parameters  
+5. Gradients are cleared  
+
+This design keeps the engine minimal while preserving conceptual similarity to larger frameworks.
+
+---
+
+## Limitations
+
+ai-lib is designed primarily as an educational project.
+
+Current limitations include:
+
+- CPU-only (no GPU acceleration)
+- No multi-threading or parallelization
+- Limited operator coverage compared to full ML frameworks
+- No automatic batching abstraction
+- No JIT compilation or graph optimization
+- Not optimized for production-scale training
+
+The focus of this project is clarity and understanding rather than raw performance.
+
+
+## Example Usage
+
+Small network example:
+
+```java
+Sequential seq = new Sequential(
+    new Linear(10, 32),
+    new ReLU(),
+    new Linear(32, 5),
+    new Sigmoid()
+);
+
+Adam optimizer = new Adam(seq, 0.001f);
+MSE lossFn = new MSE();
+
+Tensor data = new Tensor(data, true, new int[]{10});
+Tensor target = new Tensor(target, false, new int[]{5});
+
+Tensor output = seq.forward(data);
+Tensor loss = lossFn.forward(output, target);
+
+optimizer.zeroGrad();
+Autograd.backward(loss);
+optimizer.step();
+```
 
 ---
 
@@ -76,8 +179,8 @@ src/
 
 ## Requirements
 
-- Java 17 (recommended)
-- Gradle (wrapper included)
+- Java 17 (recommended)  
+- Gradle (wrapper included)  
 
 Note: Gradle may not support bleeding-edge JVM versions (e.g., Java 25).
 
@@ -123,14 +226,21 @@ The loader verifies parameter counts and tensor shapes to ensure integrity.
 
 ---
 
+## Performance Note
+
+This library prioritizes clarity and educational value over production performance.  
+It is not optimized for GPU acceleration.
+
+---
+
 ## Motivation
 
 This project was built to:
 
-- Implement neural networks from first principles
-- Understand backpropagation mechanics
-- Explore CNN training dynamics
-- Build a minimal deep learning engine without external frameworks
+- Implement neural networks from first principles  
+- Understand backpropagation mechanics  
+- Explore CNN training dynamics  
+- Build a minimal deep learning engine without external frameworks  
 
 ---
 
